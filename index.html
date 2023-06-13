@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-width=400px">
+    <title>Solar Battery</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            /* Three rows: auto, 1fr (remaining space), auto */
+            grid-gap: 10px;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+        }
+
+        .battery-container {
+            display: inline-block;
+            position: relative;
+            width: 180px;
+            height: 33.3333vh;
+            margin: 20px;
+        }
+
+        .battery-body {
+            display: flex;
+            position: absolute;
+            top: 5px;
+            left: 0;
+            width: 180px;
+            height: 80px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            justify-content: center;
+            /* horizontally center the child element */
+            align-items: center;
+            /* vertically center the child element */
+        }
+
+        .battery-level {
+            position: absolute;
+            top: 6px;
+            left: 1px;
+            height: 80px;
+            border-radius: 5px;
+        }
+
+        .Battery-right {
+            position: absolute;
+            top: 35px;
+            left: 182px;
+            width: 18px;
+            height: 20px;
+            border: 2px solid #333;
+            border-radius: 3px;
+            border-left-style: hidden;
+        }
+
+        .Battery-value {
+            position: absolute;
+            left: 220px;
+            top: 30px;
+            font-size: 30px;
+        }
+
+        .update {
+            position: absolute;
+            font-size: 12px;
+            text-align: center;
+            top: 100px;
+            left: 2px;
+        }
+
+        .weather {
+            display: inline-block;
+            text-align: center;
+            width: 200px;
+            scale: 1.5;
+            bottom: 30px;
+            margin-left: 0.7vw;
+        }
+
+        .refresh {
+            display: inline-block;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            height: 33.3333vh;
+            margin-right: 50px;
+        }
+
+        .refresh img {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            bottom: 20px;
+        }
+
+        #imgRefresh {
+            /* Initial rotation angle */
+            transform: rotate(0deg);
+            transition: transform 60s linear;
+            /* Add smooth transition effect */
+        }
+
+        @media (max-width: 800px) {
+            .battery-container {
+                width: 160px;
+                height: 90px;
+                right: 40px;
+                margin-right: 20vw;
+            }
+
+            .battery-body {
+                width: 160px;
+                height: 80px;
+            }
+
+            .battery-level {
+                height: 80px;
+            }
+
+            .Battery-right {
+                top: 40px;
+                left: 162px;
+                width: 12px;
+                height: 14px;
+            }
+
+            .Battery-value {
+                left: 190px;
+                top: 30px;
+                font-size: 30px;
+            }
+
+            .update {
+                width: 50vw;
+                height: 80px;
+            }
+
+            .Produce {
+                font-size: 20px;
+            }
+
+            .weather {
+                margin-top: 160px;
+                margin-left: 7vw;
+                scale: 1.8;
+            }
+        }
+    </style>
+
+    <script>
+
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                document.body.style.visibility = 'visible';
+            }, 100); // 100 milliseconds = 0.1 seconds
+        });
+
+        function floor2(a) {
+            a = Math.floor(a * 100) / 100
+            return a;
+        }
+        function floor3(a) {
+            a = Math.floor(a * 1000) / 1000
+            return a;
+        }
+
+        function updateBattery(value) {
+            var battery = document.getElementById("battery");
+            battery.style.width = value + "%";
+
+            if (value > 50) {
+                battery.style.backgroundColor = "#55a84f";
+            }
+
+            if (value < 50 && value > 25) {
+                battery.style.backgroundColor = "#e5de00";
+            }
+
+            if (value < 25) {
+                battery.style.backgroundColor = "#df2c14";
+            }
+        }
+
+        function init() {
+
+            var bought = 0;
+            var sold = 0;
+            var update = "-";
+            var batteryLevel = 0;
+            var batteryLevelPercentage = 0;
+            async function fetchData() {
+                try {
+                    const response = await fetch("data.json");
+                    const data = await response.json();
+                    bought = data.bought;
+                    sold = data.sold;
+                    update = data.Time_string;
+                    RatioPC = data.ratioPC;
+                    batteryLevel = data.batteryLevel;
+                    batteryLevelPercentage = data.batteryLevelPercentage;
+
+
+                    if (batteryLevelPercentage < 0) {
+                        batteryLevelPercentage = 0;
+                        batteryLevel = 0;
+                    }
+
+                    if (batteryLevelPercentage > 1) {
+                        batteryLevelPercentage = 1;
+                    }
+
+                    var operator = ""
+                    if (RatioPC >= 0) {
+                        operator = "+";
+                    }
+                    if (RatioPC < 0) {
+                        operator = "-"
+                    }
+
+                    RatioPC = Math.abs(RatioPC);
+                    RatioPC = floor3(RatioPC);
+                    console.log(batteryLevelPercentage);
+                    updateBattery(batteryLevelPercentage * 100);
+
+                    var level = document.getElementById("level");
+                    level.innerHTML = floor2(batteryLevel) + "kW"
+
+                    var updateT = document.getElementById("updateTime");
+                    updateT.innerHTML = update;
+
+                    if (RatioPC != 0) {
+                        var producing = document.querySelector("body > div.battery-container > div.battery-body > span");
+                        producing.innerHTML = operator + " " + RatioPC + "kW/h";
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+
+            fetchData();
+
+
+        }
+        var postRequestSent = false;
+        function sendPostRequest() {
+            if (!postRequestSent) {
+                var image = document.getElementById("imgRefresh");
+                image.style.transform = 'rotate(36000deg)';
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "http://192.168.0.31:8000", true);
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.send("getNewData");
+                postRequestSent = true;
+                setTimeout(function () {
+                    location.reload();
+                }, 40000);
+            } else {
+                window.alert('You already call for a refresh. Wait 1 minute')
+            }
+        }
+
+    </script>
+</head>
+
+<body onload="init();">
+    <div class="battery-container">
+        <div class="battery-level" id="battery" style="width: 43%; background-color: #55a84f;"></div>
+        <div class="battery-body">
+            <span class="Produce"></span>
+        </div>
+        <div class="Battery-right"></div>
+        <div class="Battery-value" id="level"></div>
+        <div class="update" id="updateTime"></div>
+    </div>
+
+    <div class="weather">
+
+        <a class="weatherwidget-io" href="https://forecast7.com/fr/37d34n6d14/bollullos-de-la-mitacion/"
+            data-label_1="BOLLULLOS DE LA MITACIÓN" data-mode="Current" data-theme="pure">BOLLULLOS DE LA MITACIÓN</a>
+        <script>
+            !function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = 'https://weatherwidget.io/js/widget.min.js'; fjs.parentNode.insertBefore(js, fjs); } }(document, 'script', 'weatherwidget-io-js');
+        </script>
+
+    </div>
+    <div class="refresh" onclick="sendPostRequest()"><img id="imgRefresh" src="/refresh.png"></div>
+
+
+</body>
+
+</html>
