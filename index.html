@@ -169,6 +169,25 @@
 
     <script>
 
+        fetch('data.json', { cache: 'no-store' })
+            .then(function (response) {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Error fetching data.json');
+                }
+            })
+            .then(function (data) {
+                // Handle the retrieved data
+                console.log(data);
+            })
+            .catch(function (error) {
+                // Handle errors
+                console.error(error);
+            });
+
+
+
         window.addEventListener('load', function () {
             setTimeout(function () {
                 document.body.style.visibility = 'visible';
