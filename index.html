@@ -169,23 +169,6 @@
 
     <script>
 
-        fetch('data.json', { cache: 'no-store' })
-            .then(function (response) {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Error fetching data.json');
-                }
-            })
-            .then(function (data) {
-                // Handle the retrieved data
-                console.log(data);
-            })
-            .catch(function (error) {
-                // Handle errors
-                console.error(error);
-            });
-
 
 
         window.addEventListener('load', function () {
@@ -229,7 +212,7 @@
             var batteryLevelPercentage = 0;
             async function fetchData() {
                 try {
-                    const response = await fetch("data.json");
+                    const response = await fetch('data.json', { cache: 'no-store' });
                     const data = await response.json();
                     bought = data.bought;
                     sold = data.sold;
