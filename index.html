@@ -264,25 +264,6 @@
 
 
         }
-        var postRequestSent = false;
-        function sendPostRequest() {
-            if (!postRequestSent) {
-                var image = document.getElementById("imgRefresh");
-                image.style.transform = 'rotate(36000deg)';
-
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://192.168.0.31:8000", true);
-                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhr.send("getNewData");
-                postRequestSent = true;
-                setTimeout(function () {
-                    location.reload();
-                }, 40000);
-            } else {
-                window.alert('You already call for a refresh. Wait 1 minute')
-            }
-        }
-
     </script>
 </head>
 
