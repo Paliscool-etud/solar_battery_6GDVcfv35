@@ -34,8 +34,9 @@
             display: inline-block;
             position: relative;
             width: 180px;
-            height: 33.3333vh;
             margin: 20px;
+            scale: 2;
+            margin-top: 20vh;
         }
 
         .battery-body {
@@ -123,9 +124,10 @@
         @media (max-width: 800px) {
             .battery-container {
                 width: 160px;
-                height: 90px;
                 right: 40px;
                 margin-right: 20vw;
+                scale: 1;
+                margin-top: 0;
             }
 
             .battery-body {
@@ -160,7 +162,7 @@
             }
 
             .weather {
-                margin-top: 160px;
+                margin-top: 120px;
                 margin-left: 7vw;
                 scale: 1.8;
             }
@@ -287,7 +289,7 @@
         </script>
 
     </div>
-    <div class="refresh"></div>
+    <div class="refresh" style="display:none;"></div>
 
 
 </body>
