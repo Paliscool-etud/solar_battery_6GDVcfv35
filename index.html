@@ -244,26 +244,21 @@
                     }
 
 
-                    var level = document.getElementById("level");
+                    var producing = document.querySelector("body > div.battery-container > div.battery-body > span");
                     if(RatioPC === "noData"){
-                        level.innerHTML = "--.--kW"
+                        producing.innerHTML = "--.-- kW"
                     }else{
                     RatioPC = Math.abs(RatioPC);
                     RatioPC = floor3(RatioPC);
+                    producing.innerHTML = operator + " " + RatioPC + "kW/h";
+                    }
+
                     console.log(batteryLevelPercentage);
                     updateBattery(batteryLevelPercentage * 100);
-
-                    
-                    level.innerHTML = floor2(batteryLevel) + "kW"
-
                     var updateT = document.getElementById("updateTime");
                     updateT.innerHTML = update;
-                    }
-                    /*
-                    if (RatioPC != 0) {
-                        var producing = document.querySelector("body > div.battery-container > div.battery-body > span");
-                        producing.innerHTML = operator + " " + RatioPC + "kW/h";
-                    }*/
+                    var level = document.getElementById("level");
+                    level.innerHTML = floor2(batteryLevel) + "kW"
                 } catch (error) {
                     console.error(error);
                 }
