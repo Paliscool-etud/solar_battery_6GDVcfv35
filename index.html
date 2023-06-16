@@ -107,13 +107,12 @@
             margin-right: 50px;
         }
 
-
-        #imgdetail {
-            /* Initial rotation angle */
-            transform: rotate(0deg);
-            transition: transform 60s linear;
-            /* Add smooth transition effect */
+        .detail img{
+            height: 20px; 
+            width: auto; 
+            display: inline-block;
         }
+
 
         @media (max-width: 800px) {
             .battery-container {
@@ -163,7 +162,7 @@
             }
 
             .detail{
-                margin-right: 98px;
+                margin-right: 78px;
             }
         }
     </style>
@@ -300,9 +299,9 @@
     </div>
     <div class="detail">
     
-    <img src="./icon/SolarPanel.png" style="height: 20px; width: auto; display: inline-block;"><span id="produce"></span>
+    <img src="./icon/SolarPanel.png"><span id="produce"></span>
     </br>
-    <img src="./icon/House.png"style="height: 20px; width: auto; display: inline-block;"><span id="consumption"></span>
+    <img src="./icon/House.png"><span id="consumption"></span>
     
     </div>
 
