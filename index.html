@@ -207,10 +207,10 @@
             }
         }
 
-        function init() {
+        var produce = 0;
+        var consumption = 0;
 
-            var bought = 0;
-            var sold = 0;
+        function init() {
             var update = "-";
             var batteryLevel = 0;
             var batteryLevelPercentage = 0;
@@ -218,8 +218,8 @@
                 try {
                     const response = await fetch('data.json', { cache: 'no-store' });
                     const data = await response.json();
-                    bought = data.bought;
-                    sold = data.sold;
+                    produce = data.produce;
+                    consumption = data.consumption;
                     update = data.Time_string;
                     RatioPC = data.ratioPC;
                     batteryLevel = data.batteryLevel;
@@ -245,12 +245,12 @@
 
 
                     var producing = document.querySelector("body > div.battery-container > div.battery-body > span");
-                    if(RatioPC === "noData"){
+                    if (RatioPC === "noData") {
                         producing.innerHTML = "--.-- kW/h"
-                    }else{
-                    RatioPC = Math.abs(RatioPC);
-                    RatioPC = floor3(RatioPC);
-                    producing.innerHTML = operator + " " + RatioPC + "kW/h";
+                    } else {
+                        RatioPC = Math.abs(RatioPC);
+                        RatioPC = floor3(RatioPC);
+                        producing.innerHTML = operator + " " + RatioPC + "kW/h";
                     }
 
                     console.log(batteryLevelPercentage);
@@ -266,8 +266,10 @@
 
 
             fetchData();
+        }
 
-
+        function fullData() {
+            window.alert("Produce : " + produce + " kW/h" + "\nConsumption : " + consumption + " kW/h");
         }
     </script>
 </head>
@@ -275,7 +277,7 @@
 <body onload="init();">
     <div class="battery-container">
         <div class="battery-level" id="battery" style="width: 43%; background-color: #55a84f;"></div>
-        <div class="battery-body">
+        <div class="battery-body" onclick="fullData()">
             <span class="Produce"></span>
         </div>
         <div class="Battery-right"></div>
