@@ -98,24 +98,17 @@
             margin-top: 10px;
         }
 
-        .refresh {
+        .detail {
             display: inline-block;
-            text-align: center;
+            text-align: right;
             align-items: center;
             justify-content: center;
-            height: 33.3333vh;
+            height: 10vh;
             margin-right: 50px;
         }
 
-        .refresh img {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            bottom: 20px;
-        }
 
-        #imgRefresh {
+        #imgdetail {
             /* Initial rotation angle */
             transform: rotate(0deg);
             transition: transform 60s linear;
@@ -167,6 +160,10 @@
                 margin-left: 7vw;
                 scale: 1.8;
                 margin-bottom: 5vh;
+            }
+
+            .detail{
+                margin-right: 98px;
             }
         }
     </style>
@@ -245,12 +242,12 @@
 
 
                     var producing = document.querySelector("body > div.battery-container > div.battery-body > span");
-                    if (RatioPC === "noData") {
+                    if(RatioPC === "noData"){
                         producing.innerHTML = "--.-- kW/h"
-                    } else {
-                        RatioPC = Math.abs(RatioPC);
-                        RatioPC = floor3(RatioPC);
-                        producing.innerHTML = operator + " " + RatioPC + "kW/h";
+                    }else{
+                    RatioPC = Math.abs(RatioPC);
+                    RatioPC = floor3(RatioPC);
+                    producing.innerHTML = operator + " " + RatioPC + "kW/h";
                     }
 
                     console.log(batteryLevelPercentage);
@@ -258,7 +255,8 @@
                     var updateT = document.getElementById("updateTime");
                     updateT.innerHTML = update;
                     var level = document.getElementById("level");
-                    level.innerHTML = floor2(batteryLevel) + "kW"
+                    level.innerHTML = floor2(batteryLevel) + "kW";
+                    fullData();
                 } catch (error) {
                     console.error(error);
                 }
@@ -268,16 +266,22 @@
             fetchData();
         }
 
-        function fullData() {
-            window.alert("Produce : " + produce + " kW/h" + "\nConsumption : " + consumption + " kW/h");
-        }
+        function fullData(){
+            console.log("Hello world !");
+            var prodSpan = document.getElementById("produce");
+            var consSpan = document.getElementById("consumption");
+            
+            prodSpan.innerHTML = "   " + produce.toFixed(3) + " kW/h";
+            consSpan.innerHTML = "   " + consumption.toFixed(3) + " kW/h";
+            console.log(prodSpan);
+            }
     </script>
 </head>
 
 <body onload="init();">
     <div class="battery-container">
         <div class="battery-level" id="battery" style="width: 43%; background-color: #55a84f;"></div>
-        <div class="battery-body" onclick="fullData()">
+        <div class="battery-body">
             <span class="Produce"></span>
         </div>
         <div class="Battery-right"></div>
@@ -294,7 +298,13 @@
         </script>
 
     </div>
-    <div class="refresh" style="display:none;"></div>
+    <div class="detail">
+    
+    <img src="/icon/SolarPanel.png" style="height: 20px; width: auto; display: inline-block;"><span id="produce"></span>
+    </br>
+    <img src="/icon/House.png"style="height: 20px; width: auto; display: inline-block;"><span id="consumption"></span>
+    
+    </div>
 
 
 </body>
