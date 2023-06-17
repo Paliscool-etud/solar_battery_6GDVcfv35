@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CSV Data Plot</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div id="chart"></div>
+
+  <script>
+    // Read the CSV file using Plotly's built-in function
+    Plotly.d3.csv('batteryLevel.csv', function(data) {
+      var values = [];
+      var timestamps = [];
+  
+      // Extract the values and timestamps from the CSV data
+      data.forEach(function(row) {
+        values.push(parseFloat(row['Values'])); // Convert the value to a float
+        timestamps.push(String(row['Times']));
+      });
+  
+      console.log(values);
+      console.log(timestamps);
+  
+      var maxValue = Math.max(...values); // Calculate the maximum value
+  
+      // Create the plot using Plotly.js
+      var trace = {
+        x: timestamps,
+        y: values,
+        mode: 'lines+markers',
+        type: 'scatter'
+      };
+  
+      var layout = {
+        title: 'CSV Data Plot',
+        xaxis: {
+          title: 'Timestamp',
+          tickformat: '%d-%m-%Y %H:%M:%S', // Format the tick labels
+          type: 'date' // Specify the X-axis type as date
+        },
+        yaxis: {
+          title: 'Value',
+          range: [0, maxValue] // Set the range of the y-axis
+        },
+        updatemenus: [
+          {
+            buttons: [
+              {
+                label: 'Today',
+                method: 'relayout',
+                args: [
+                  { 'xaxis.range': [new Date().setHours(0, 0, 0, 0), new Date()] }
+                ]
+              },
+              {
+                label: 'This Week',
+                method: 'relayout',
+                args: [
+                  {
+                    'xaxis.range': [
+                      new Date().setHours(0, 0, 0, 0) - 7 * 24 * 60 * 60 * 1000,
+                      new Date()
+                    ]
+                  }
+                ]
+              },
+              {
+                label: 'This Month',
+                method: 'relayout',
+                args: [
+                  {
+                    'xaxis.range': [
+                      new Date().setHours(0, 0, 0, 0) - 30 * 24 * 60 * 60 * 1000,
+                      new Date()
+                    ]
+                  }
+                ]
+              }
+            ],
+            direction: 'left',
+            pad: { r: 10, t: 10 },
+            showactive: true,
+            type: 'buttons',
+            x: 0.1,
+            xanchor: 'right',
+            y: 1.1,
+            yanchor: 'top'
+          }
+        ]
+      };
+  
+      Plotly.newPlot('chart', [trace], layout);
+    });
+  </script>
+  
+  
+  
+</body>
+</html>
+  </script>
+</body>
+</html>
