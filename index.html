@@ -204,11 +204,14 @@
 
         var produce = 0;
         var consumption = 0;
-
+        var priceElec
+        var update = "-";
+        var batteryLevel = 0;
+        var batteryLevelPercentage = 0;
+        var ratioPC = 0;
+        var operator = ""
         function init() {
-            var update = "-";
-            var batteryLevel = 0;
-            var batteryLevelPercentage = 0;
+
             async function fetchData() {
                 try {
                     const response = await fetch('data.json', { cache: 'no-store' });
@@ -216,9 +219,10 @@
                     produce = data.produce;
                     consumption = data.consumption;
                     update = data.Time_string;
-                    RatioPC = data.ratioPC;
+                    ratioPC = data.ratioPC;
                     batteryLevel = data.batteryLevel;
                     batteryLevelPercentage = data.batteryLevelPercentage;
+                    priceElec = data.buyPrice;
 
 
                     if (batteryLevelPercentage < 0) {
@@ -229,22 +233,21 @@
                         batteryLevelPercentage = 1;
                     }
 
-                    var operator = ""
-                    if (RatioPC >= 0) {
+
+                    if (ratioPC >= 0) {
                         operator = "+";
                     }
-                    if (RatioPC < 0) {
+                    if (ratioPC < 0) {
                         operator = "-"
                     }
 
 
                     var producing = document.querySelector("body > div.battery-container > div.battery-body > span");
-                    if(RatioPC === "noData"){
+                    if(ratioPC === "noData"){
                         producing.innerHTML = "--.-- kW/h"
                     }else{
-                    RatioPC = Math.abs(RatioPC);
-                    RatioPC = floor3(RatioPC);
-                    producing.innerHTML = operator + " " + RatioPC + "kW/h";
+                    ratioPC = floor3(ratioPC);
+                    producing.innerHTML = operator + " " + Math.abs(ratioPC) + "kW/h";
                     }
 
                     console.log(batteryLevelPercentage);
@@ -272,6 +275,13 @@
             consSpan.innerHTML = "   " + consumption.toFixed(3) + " kW/h";
             console.log(prodSpan);
             }
+
+        function getPrice(){
+            console.log("hi !");
+            if(batteryLevel<0){
+                window.alert("Electricity cost is: " + floor2(Math.abs(batteryLevel)*priceElec) + "€");
+            }
+        }
     </script>
 </head>
 
@@ -282,7 +292,7 @@
             <span class="Produce"></span>
         </div>
         <div class="Battery-right"></div>
-        <div class="Battery-value" id="level"></div>
+        <div class="Battery-value" id="level" onclick="getPrice()"></div>
         <div class="update" id="updateTime"></div>
     </div>
 
