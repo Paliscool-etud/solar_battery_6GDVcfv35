@@ -9,6 +9,9 @@
     <meta http-equiv="expires" content="0">
     <title>Solar Battery</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -95,6 +98,11 @@
             scale: 1.5;
             margin-left: 0.7vw;
             margin-top: 40px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .ThemometerLogo img{
+            width: 100px;
         }
 
         .detail {
@@ -159,6 +167,7 @@
                 scale: 1.8;
                 margin-bottom: 5vh;
             }
+            
 
             .detail{
                 margin-right: 76px;
@@ -210,6 +219,7 @@
         var batteryLevelPercentage = 0;
         var ratioPC = 0;
         var operator = ""
+        var temperature = 0;
         function init() {
 
             async function fetchData() {
@@ -223,7 +233,7 @@
                     batteryLevel = data.batteryLevel;
                     batteryLevelPercentage = data.batteryLevelPercentage;
                     priceElec = data.buyPrice;
-
+                    temperature = data.Temperature;
 
                     if (batteryLevelPercentage < 0) {
                         batteryLevelPercentage = 0;
@@ -256,6 +266,7 @@
                     updateT.innerHTML = update;
                     var level = document.getElementById("level");
                     level.innerHTML = floor2(batteryLevel) + "kW";
+                    document.getElementById("valueThermo").innerHTML = temperature+"°C"
                     fullData();
                 } catch (error) {
                     console.error(error);
@@ -297,13 +308,8 @@
     </div>
 
     <div class="weather">
-
-        <a class="weatherwidget-io" href="https://forecast7.com/fr/37d34n6d14/bollullos-de-la-mitacion/"
-            data-label_1="BOLLULLOS DE LA MITACIÓN" data-mode="Current" data-theme="pure">BOLLULLOS DE LA MITACIÓN</a>
-        <script>
-            !function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = 'https://weatherwidget.io/js/widget.min.js'; fjs.parentNode.insertBefore(js, fjs); } }(document, 'script', 'weatherwidget-io-js');
-        </script>
-
+        <div class="ThemometerLogo"><img src="thermometerLogo.png"></div>
+        <div id="valueThermo">XX.XX°C</div>
     </div>
     <div class="detail">
     
