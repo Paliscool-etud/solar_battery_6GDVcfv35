@@ -92,8 +92,14 @@
         }
 
         .weather {
-            display: inline-block;
+            display: flex;
+            /* Change to flex */
+            flex-direction: column;
+            /* Stack thermometer and valueThermo vertically */
+            align-items: center;
+            /* Center items horizontally */
             text-align: center;
+            /* Center text */
             width: 200px;
             scale: 1.5;
             margin-left: 0.7vw;
@@ -101,8 +107,39 @@
             font-family: 'Roboto', sans-serif;
         }
 
-        .ThemometerLogo img{
+        .thermometer-container {
+            position: relative;
             width: 100px;
+            /* Adjust width as needed */
+            height: 100px;
+            /* Adjust height as needed */
+            margin: 0 auto;
+            margin-bottom: 5px;
+            /* Center horizontally */
+        }
+
+        .thermometer-container img {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .tInside {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .tOutside {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            z-index: 2;
+            object-fit: contain;
+            /* Adjust the top value as needed */
+            top: 0;
         }
 
         .detail {
@@ -114,9 +151,9 @@
             margin-right: 50px;
         }
 
-        .detail img{
-            height: 20px; 
-            width: auto; 
+        .detail img {
+            height: 20px;
+            width: auto;
             display: inline-block;
         }
 
@@ -167,9 +204,9 @@
                 scale: 1.8;
                 margin-bottom: 5vh;
             }
-            
 
-            .detail{
+
+            .detail {
                 margin-right: 76px;
             }
         }
@@ -253,11 +290,11 @@
 
 
                     var producing = document.querySelector("body > div.battery-container > div.battery-body > span");
-                    if(ratioPC === "noData"){
+                    if (ratioPC === "noData") {
                         producing.innerHTML = "--.-- kW/h"
-                    }else{
-                    ratioPC = floor3(ratioPC);
-                    producing.innerHTML = operator + " " + Math.abs(ratioPC) + "kW/h";
+                    } else {
+                        ratioPC = floor3(ratioPC);
+                        producing.innerHTML = operator + " " + Math.abs(ratioPC) + "kW/h";
                     }
 
                     console.log(batteryLevelPercentage);
@@ -266,8 +303,40 @@
                     updateT.innerHTML = update;
                     var level = document.getElementById("level");
                     level.innerHTML = floor2(batteryLevel) + "kW";
-                    document.getElementById("valueThermo").innerHTML = temperature+"°C"
-                    fullData();
+
+                    function changeMercuTemp(inputValue) {
+                        const tOutsideImage = document.querySelector('.tOutside');
+                        const tOutsideElement = document.querySelector('.tOutside');
+
+                        if (inputValue < 26) {
+                            tOutsideImage.src = 'thermometer/thermometerLogo_inside_G.png'; // Replace with the actual path
+                        } else if (inputValue < 32) {
+                            tOutsideImage.src = 'thermometer/thermometerLogo_inside_Y.png'; // Replace with the actual path
+                        } else {
+                            tOutsideImage.src = 'thermometer/thermometerLogo_inside_R.png'; // Replace with the actual path
+                        }
+
+                        // Define the input range and corresponding clip value range
+                        const inputRange = [-20, 0, 10, 20, 30];
+                        const clipValueRange = [96, 63, 49.5, 35, 21];
+
+                        // Find the index where inputValue falls in the input range
+                        let index = 0;
+                        while (index < inputRange.length - 1 && inputValue > inputRange[index]) {
+                            index++;
+                        }
+
+                        // Interpolate the corresponding clip value based on the index
+                        const inputDiff = inputRange[index] - inputRange[index - 1];
+                        const clipDiff = clipValueRange[index] - clipValueRange[index - 1];
+                        const clipValue = clipValueRange[index - 1] + (inputValue - inputRange[index - 1]) / inputDiff * clipDiff;
+
+                        tOutsideElement.style.clip = `rect(${clipValue}px, auto, auto, auto)`;
+                    }
+
+                    document.getElementById("valueThermo").innerHTML = temperature + "°C"
+                    changeMercuTemp(temperature);
+                    fullData()
                 } catch (error) {
                     console.error(error);
                 }
@@ -277,20 +346,20 @@
             fetchData();
         }
 
-        function fullData(){
+        function fullData() {
             console.log("Hello world !");
             var prodSpan = document.getElementById("produce");
             var consSpan = document.getElementById("consumption");
-            
+
             prodSpan.innerHTML = "   " + produce.toFixed(3) + " kW/h";
             consSpan.innerHTML = "   " + consumption.toFixed(3) + " kW/h";
             console.log(prodSpan);
-            }
+        }
 
-        function getPrice(){
+        function getPrice() {
             console.log("hi !");
-            if(batteryLevel<0){
-                window.alert("Electricity cost is: " + floor2(Math.abs(batteryLevel)*priceElec) + "€");
+            if (batteryLevel < 0) {
+                window.alert("Electricity cost is: " + floor2(Math.abs(batteryLevel) * priceElec) + "€");
             }
         }
     </script>
@@ -308,15 +377,18 @@
     </div>
 
     <div class="weather">
-        <div class="ThemometerLogo"><a href="https://www.aemet.es/es/eltiempo/prediccion/municipios/horas/bollullos-de-la-mitacion-id41016"><img src="thermometerLogo.png"></a></div>
+        <div class="thermometer-container">
+            <img src="thermometer/thermometerLogo_outside.png" alt="Background Image" class="tInside">
+            <img src="thermometer/thermometerLogo_inside.png" alt="Overlay Image" class="tOutside">
+        </div>
         <div id="valueThermo">XX.XX°C</div>
     </div>
     <div class="detail">
-    
-    <img src="./icon/SolarPanel.png"><span id="produce"></span>
-    </br>
-    <img src="./icon/House.png"><span id="consumption"></span>
-    
+
+        <img src="./icon/SolarPanel.png"><span id="produce"></span>
+        </br>
+        <img src="./icon/House.png"><span id="consumption"></span>
+
     </div>
 
 
