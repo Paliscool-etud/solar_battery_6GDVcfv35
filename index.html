@@ -9,6 +9,9 @@
     <meta http-equiv="expires" content="0">
     <title>Solar Battery</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -89,13 +92,54 @@
         }
 
         .weather {
-            display: inline-block;
+            display: flex;
+            /* Change to flex */
+            flex-direction: column;
+            /* Stack thermometer and valueThermo vertically */
+            align-items: center;
+            /* Center items horizontally */
             text-align: center;
+            /* Center text */
             width: 200px;
             scale: 1.5;
-            bottom: 30px;
             margin-left: 0.7vw;
-            margin-top: 10px;
+            margin-top: 40px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .thermometer-container {
+            position: relative;
+            width: 100px;
+            /* Adjust width as needed */
+            height: 100px;
+            /* Adjust height as needed */
+            margin: 0 auto;
+            margin-bottom: 5px;
+            /* Center horizontally */
+        }
+
+        .thermometer-container img {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .tInside {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .tOutside {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            z-index: 2;
+            object-fit: contain;
+            /* Adjust the top value as needed */
+            top: 0;
         }
 
         .detail {
@@ -107,9 +151,9 @@
             margin-right: 50px;
         }
 
-        .detail img{
-            height: 20px; 
-            width: auto; 
+        .detail img {
+            height: 20px;
+            width: auto;
             display: inline-block;
         }
 
@@ -161,7 +205,8 @@
                 margin-bottom: 5vh;
             }
 
-            .detail{
+
+            .detail {
                 margin-right: 76px;
             }
         }
@@ -205,11 +250,15 @@
 
         var produce = 0;
         var consumption = 0;
-
+        var priceElec
+        var update = "-";
+        var batteryLevel = 0;
+        var batteryLevelPercentage = 0;
+        var ratioPC = 0;
+        var operator = ""
+        var temperature = 0;
         function init() {
-            var update = "-";
-            var batteryLevel = 0;
-            var batteryLevelPercentage = 0;
+
             async function fetchData() {
                 try {
                     const response = await fetch('data.json', { cache: 'no-store' });
@@ -217,36 +266,35 @@
                     produce = data.produce;
                     consumption = data.consumption;
                     update = data.Time_string;
-                    RatioPC = data.ratioPC;
+                    ratioPC = data.ratioPC;
                     batteryLevel = data.batteryLevel;
                     batteryLevelPercentage = data.batteryLevelPercentage;
-
+                    priceElec = data.buyPrice;
+                    temperature = data.Temperature;
 
                     if (batteryLevelPercentage < 0) {
                         batteryLevelPercentage = 0;
-                        batteryLevel = 0;
                     }
 
                     if (batteryLevelPercentage > 1) {
                         batteryLevelPercentage = 1;
                     }
 
-                    var operator = ""
-                    if (RatioPC >= 0) {
+
+                    if (ratioPC >= 0) {
                         operator = "+";
                     }
-                    if (RatioPC < 0) {
+                    if (ratioPC < 0) {
                         operator = "-"
                     }
 
 
                     var producing = document.querySelector("body > div.battery-container > div.battery-body > span");
-                    if(RatioPC === "noData"){
+                    if (ratioPC === "noData") {
                         producing.innerHTML = "--.-- kW/h"
-                    }else{
-                    RatioPC = Math.abs(RatioPC);
-                    RatioPC = floor3(RatioPC);
-                    producing.innerHTML = operator + " " + RatioPC + "kW/h";
+                    } else {
+                        ratioPC = floor3(ratioPC);
+                        producing.innerHTML = operator + " " + Math.abs(ratioPC) + "kW/h";
                     }
 
                     console.log(batteryLevelPercentage);
@@ -255,7 +303,40 @@
                     updateT.innerHTML = update;
                     var level = document.getElementById("level");
                     level.innerHTML = floor2(batteryLevel) + "kW";
-                    fullData();
+
+                    function changeMercuTemp(inputValue) {
+                        const tOutsideImage = document.querySelector('.tOutside');
+                        const tOutsideElement = document.querySelector('.tOutside');
+
+                        if (inputValue < 26) {
+                            tOutsideImage.src = 'thermometer/thermometerLogo_inside_G.png'; // Replace with the actual path
+                        } else if (inputValue < 32) {
+                            tOutsideImage.src = 'thermometer/thermometerLogo_inside_Y.png'; // Replace with the actual path
+                        } else {
+                            tOutsideImage.src = 'thermometer/thermometerLogo_inside_R.png'; // Replace with the actual path
+                        }
+
+                        // Define the input range and corresponding clip value range
+                        const inputRange = [-20, 0, 10, 20, 30];
+                        const clipValueRange = [96, 63, 49.5, 35, 21];
+
+                        // Find the index where inputValue falls in the input range
+                        let index = 0;
+                        while (index < inputRange.length - 1 && inputValue > inputRange[index]) {
+                            index++;
+                        }
+
+                        // Interpolate the corresponding clip value based on the index
+                        const inputDiff = inputRange[index] - inputRange[index - 1];
+                        const clipDiff = clipValueRange[index] - clipValueRange[index - 1];
+                        const clipValue = clipValueRange[index - 1] + (inputValue - inputRange[index - 1]) / inputDiff * clipDiff;
+
+                        tOutsideElement.style.clip = `rect(${clipValue}px, auto, auto, auto)`;
+                    }
+
+                    document.getElementById("valueThermo").innerHTML = temperature + "°C"
+                    changeMercuTemp(temperature);
+                    fullData()
                 } catch (error) {
                     console.error(error);
                 }
@@ -265,15 +346,22 @@
             fetchData();
         }
 
-        function fullData(){
+        function fullData() {
             console.log("Hello world !");
             var prodSpan = document.getElementById("produce");
             var consSpan = document.getElementById("consumption");
-            
+
             prodSpan.innerHTML = "   " + produce.toFixed(3) + " kW/h";
             consSpan.innerHTML = "   " + consumption.toFixed(3) + " kW/h";
             console.log(prodSpan);
+        }
+
+        function getPrice() {
+            console.log("hi !");
+            if (batteryLevel < 0) {
+                window.alert("Electricity cost is: " + floor2(Math.abs(batteryLevel) * priceElec) + "€");
             }
+        }
     </script>
 </head>
 
@@ -284,25 +372,25 @@
             <span class="Produce"></span>
         </div>
         <div class="Battery-right"></div>
-        <div class="Battery-value" id="level"></div>
+        <div class="Battery-value" id="level" onclick="getPrice()"></div>
         <div class="update" id="updateTime"></div>
     </div>
 
     <div class="weather">
-
-        <a class="weatherwidget-io" href="https://forecast7.com/fr/37d34n6d14/bollullos-de-la-mitacion/"
-            data-label_1="BOLLULLOS DE LA MITACIÓN" data-mode="Current" data-theme="pure">BOLLULLOS DE LA MITACIÓN</a>
-        <script>
-            !function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = 'https://weatherwidget.io/js/widget.min.js'; fjs.parentNode.insertBefore(js, fjs); } }(document, 'script', 'weatherwidget-io-js');
-        </script>
-
+        <div class="thermometer-container">
+            <a href="https://www.aemet.es/es/eltiempo/prediccion/municipios/horas/bollullos-de-la-mitacion-id41016">
+                <img src="thermometer/thermometerLogo_outside.png" alt="Background Image" class="tInside">
+                <img src="thermometer/thermometerLogo_inside.png" alt="Overlay Image" class="tOutside">
+            </a>
+        </div>
+        <div id="valueThermo">XX.XX°C</div>
     </div>
     <div class="detail">
-    
-    <img src="./icon/SolarPanel.png"><span id="produce"></span>
-    </br>
-    <img src="./icon/House.png"><span id="consumption"></span>
-    
+
+        <img src="./icon/SolarPanel.png"><span id="produce"></span>
+        </br>
+        <img src="./icon/House.png"><span id="consumption"></span>
+
     </div>
 
 
