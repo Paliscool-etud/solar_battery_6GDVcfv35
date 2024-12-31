@@ -1,15 +1,1 @@
-{
-    "bought": 356.88,
-    "sold": 302.51,
-    "Time_string": "Last update at 15:53 - 31/12/2024",
-    "produce": 0.0,
-    "consumption": 7.979,
-    "ratioPC": -7.979,
-    "maxAtThisDay": 100,
-    "batteryLevelPercentage": 0,
-    "buyPrice": 0.149072,
-    "sellPrice": 0.1,
-    "batteryLevel": -54.37,
-    "maxBatteryForMonth": 100,
-    "Temperature": 12.0
-}
+{"bought": 364.63, "sold": 302.51, "Time_string": "Last update at 16:55 - 31/12/2024", "produce": 1.51, "consumption": 745.0, "ratioPC": -743.49, "maxAtThisDay": 100, "batteryLevelPercentage": 0, "buyPrice": 0.149072, "sellPrice": 0.1, "batteryLevel": -62.12, "maxBatteryForMonth": 100, "Temperature": "15.5"}
